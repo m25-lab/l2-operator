@@ -1,0 +1,189 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "resolveJsonModule": true,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
+    "paths": {
+      "@lib/shared/base": ["libs/shared/base/src"],
+      "@lib/shared/base/*": ["libs/shared/base/src/*"],
+      "@lib/shared/configuration": ["libs/shared/configuration/src"],
+      "@lib/shared/configuration/*": ["libs/shared/configuration/src/*"],
+      "@lib/shared/utils": ["libs/shared/utils/src"],
+      "@lib/shared/utils/*": ["libs/shared/utils/src/*"],
+      "@lib/shared/interfaces": ["libs/shared/interfaces/src"],
+      "@lib/shared/interfaces/*": ["libs/shared/interfaces/src/*"],
+      "@lib/shared/constants": ["libs/shared/constants/src"],
+      "@lib/shared/constants/*": ["libs/shared/constants/src/*"],
+      "@lib/shared/database": ["libs/shared/database/src"],
+      "@lib/shared/database/*": ["libs/shared/database/src/*"],
+      "@lib/shared/database/postgres": ["libs/shared/database/postgres/src"],
+      "@lib/shared/database/postgres/*": [
+        "libs/shared/database/postgres/src/*"
+      ],
+      "@lib/shared/database/redis": ["libs/shared/database/redis/src"],
+      "@lib/shared/database/redis/*": ["libs/shared/database/redis/src/*"],
+      "@lib/shared/decorators": ["libs/shared/decorators/src"],
+      "@lib/shared/decorators/*": ["libs/shared/decorators/src/*"],
+      "@lib/shared/entities": ["libs/shared/entities/src"],
+      "@lib/shared/entities/*": ["libs/shared/entities/src/*"],
+      "@lib/shared/filter": ["libs/shared/filter/src"],
+      "@lib/shared/filter/*": ["libs/shared/filter/src/*"],
+      "@lib/shared/i18n": ["libs/shared/i18n/src"],
+      "@lib/shared/i18n/*": ["libs/shared/i18n/src/*"],
+      "@lib/shared/kafka": ["libs/shared/kafka/src"],
+      "@lib/shared/kafka/*": ["libs/shared/kafka/src/*"],
+      "@lib/shared/logger": ["libs/shared/logger/src"],
+      "@lib/shared/logger/*": ["libs/shared/logger/src/*"],
+      "@lib/core": ["libs/core/src"],
+      "@lib/core/*": ["libs/core/src/*"],
+      "@lib/shared/uuid": ["libs/shared/uuid/src"],
+      "@lib/shared/uuid/*": ["libs/shared/uuid/src/*"],
+      "@lib/features/user-session/shared": [
+        "libs/features/user-session/shared/src"
+      ],
+      "@lib/features/user-session/shared/*": [
+        "libs/features/user-session/shared/src/*"
+      ],
+      "@lib/features/user-auth/shared": ["libs/features/user-auth/shared/src"],
+      "@lib/features/user-auth/shared/*": [
+        "libs/features/user-auth/shared/src/*"
+      ],
+      "@lib/features/user-auth/public-handler": [
+        "libs/features/user-auth/public-handler/src"
+      ],
+      "@lib/features/user-auth/public-handler/*": [
+        "libs/features/user-auth/public-handler/src/*"
+      ],
+      "@lib/shared/validation": ["libs/shared/validation/src"],
+      "@lib/shared/validation/*": ["libs/shared/validation/src/*"],
+      "@lib/features/user/shared": ["libs/features/user/shared/src"],
+      "@lib/features/user/shared/*": ["libs/features/user/shared/src/*"],
+      "@lib/features/user/public-handler": [
+        "libs/features/user/public-handler/src"
+      ],
+      "@lib/features/user/public-handler/*": [
+        "libs/features/user/public-handler/src/*"
+      ],
+      "@lib/shared/auth0": ["libs/shared/auth0/src"],
+      "@lib/shared/auth0/*": ["libs/shared/auth0/src/*"],
+      "@lib/shared/otp": ["libs/shared/otp/src"],
+      "@lib/shared/otp/*": ["libs/shared/otp/src/*"],
+      "@lib/features/contact/shared": ["libs/features/contact/shared/src"],
+      "@lib/features/contact/shared/*": ["libs/features/contact/shared/src/*"],
+      "@lib/features/contact/public-handler": [
+        "libs/features/contact/public-handler/src"
+      ],
+      "@lib/features/contact/public-handler/*": [
+        "libs/features/contact/public-handler/src/*"
+      ],
+      "@lib/shared/ethereum": ["libs/shared/ethereum/src"],
+      "@lib/shared/ethereum/*": ["libs/shared/ethereum/src/*"],
+      "@lib/shared/orchestrate": ["libs/shared/orchestrate/src"],
+      "@lib/shared/orchestrate/*": ["libs/shared/orchestrate/src/*"],
+      "@lib/features/transaction/shared": [
+        "libs/features/transaction/shared/src"
+      ],
+      "@lib/features/transaction/shared/*": [
+        "libs/features/transaction/shared/src/*"
+      ],
+      "@lib/features/token-management/shared": [
+        "libs/features/token-management/shared/src"
+      ],
+      "@lib/features/token-management/shared/*": [
+        "libs/features/token-management/shared/src/*"
+      ],
+      "@lib/features/token-management/public-handler": [
+        "libs/features/token-management/public-handler/src"
+      ],
+      "@lib/features/token-management/public-handler/*": [
+        "libs/features/token-management/public-handler/src/*"
+      ],
+      "@lib/features/token-management/admin-handler": [
+        "libs/features/token-management/admin-handler/src"
+      ],
+      "@lib/features/token-management/admin-handler/*": [
+        "libs/features/token-management/admin-handler/src/*"
+      ],
+      "@lib/features/transaction/public-handler": [
+        "libs/features/transaction/public-handler/src"
+      ],
+      "@lib/features/transaction/public-handler/*": [
+        "libs/features/transaction/public-handler/src/*"
+      ],
+      "@lib/features/doo/shared": ["libs/features/doo/shared/src"],
+      "@lib/features/doo/shared/*": ["libs/features/doo/shared/src/*"],
+      "@lib/features/account/shared": ["libs/features/account/shared/src"],
+      "@lib/features/account/shared/*": ["libs/features/account/shared/src/*"],
+      "@lib/features/account/public-handler": [
+        "libs/features/account/public-handler/src"
+      ],
+      "@lib/features/account/public-handler/*": [
+        "libs/features/account/public-handler/src/*"
+      ],
+      "@lib/features/doo/public-handler": [
+        "libs/features/doo/public-handler/src"
+      ],
+      "@lib/features/doo/public-handler/*": [
+        "libs/features/doo/public-handler/src/*"
+      ],
+      "@lib/features/chain-management/shared": [
+        "libs/features/chain-management/shared/src"
+      ],
+      "@lib/features/chain-management/shared/*": [
+        "libs/features/chain-management/shared/src/*"
+      ],
+      "@lib/features/chain-management/admin-handler": [
+        "libs/features/chain-management/admin-handler/src"
+      ],
+      "@lib/features/chain-management/admin-handler/*": [
+        "libs/features/chain-management/admin-handler/src/*"
+      ],
+      "@lib/features/contract-management/shared": [
+        "libs/features/contract-management/shared/src"
+      ],
+      "@lib/features/contract-management/shared/*": [
+        "libs/features/contract-management/shared/src/*"
+      ],
+      "@lib/features/contract-management/admin-handler": [
+        "libs/features/contract-management/admin-handler/src"
+      ],
+      "@lib/features/contract-management/admin-handler/*": [
+        "libs/features/contract-management/admin-handler/src/*"
+      ],
+      "@lib/shared/telegram": ["libs/shared/telegram/src"],
+      "@lib/shared/telegram/*": ["libs/shared/telegram/src/*"],
+      "@lib/features/chain-management/public-handler": [
+        "libs/features/chain-management/public-handler/src"
+      ],
+      "@lib/features/chain-management/public-handler/*": [
+        "libs/features/chain-management/public-handler/src/*"
+      ],
+      "@lib/features/bridge/shared": ["libs/features/bridge/shared/src"],
+      "@lib/features/bridge/shared/*": ["libs/features/bridge/shared/src/*"],
+      "@lib/features/bridge/public-handler": [
+        "libs/features/bridge/public-handler/src"
+      ],
+      "@lib/features/bridge/public-handler/*": [
+        "libs/features/bridge/public-handler/src/*"
+      ],
+      "@lib/shared/email": ["libs/shared/email/src"],
+      "@lib/shared/email/*": ["libs/shared/email/src/*"]
+    }
+  }
+}

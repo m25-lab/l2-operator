@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  api:
+    image: doo/admin-api
+    volumes:
+      - ../../.env:/app/.env
+    build: 
+      context: ../..
+      dockerfile: ./docker/admin-api/Dockerfile
+    ports:
+      - "8001:3001"
+    container_name: doo-admin-api
+    restart: on-failure

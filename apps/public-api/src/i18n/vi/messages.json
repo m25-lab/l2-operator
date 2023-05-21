@@ -1,0 +1,23 @@
+{
+  "exceptions": {
+    "notfound": "Không tìm thấy",
+    "updateFailed": "Cập nhật thất bại",
+    "internalServerError": "Lỗi máy chủ. Vui lòng thử lại sau."
+  },
+  "auth": {
+    "token": {
+      "invalid": "Token không hợp lệ.",
+      "email_not_verified": "Email chưa được xác thực."
+    },
+    "user": {
+      "not_found": "Không tìm thấy người dùng.",
+      "more_than_one": "Có nhiều hơn một người dùng.",
+      "email_already_exists": "Email đã tồn tại.",
+      "verification_email_sent": "Email xác thực đã được gửi.",
+      "email_already_verified": "Email đã được xác thực.",
+      "logout": "Đăng xuất thành công.",
+      "logout_error": "Đăng xuất thất bại.",
+      "refresh_token_error": "Lỗi khi tạo token mới."
+    }
+  }
+}

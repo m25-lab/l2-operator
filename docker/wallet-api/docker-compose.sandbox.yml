@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  api:
+    image: doo/api
+    volumes:
+      - ../../.env:/app/.env
+    build: 
+      context: ../..
+      dockerfile: ./docker/wallet-api/Dockerfile
+    ports:
+      - "8000:3000"
+    container_name: doo-api
+    restart: on-failure
