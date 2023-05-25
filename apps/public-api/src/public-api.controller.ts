@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
 import { ApiOkResponse } from '@lib/shared/decorators'
+import { ActionResponse } from '@lib/shared/utils'
 
 import { PublicApiService } from './public-api.service'
 
@@ -9,48 +10,38 @@ export class PublicApiController {
 
   @Post('tx')
   @ApiOkResponse()
-  async submitTx(@Body() body: any): Promise<boolean> {
-    try {
-      await this.service.sendTransaction(body['tx'])
-    } catch (e) {
-      console.log(e)
+  async submitTx(@Body() body: any) {
+    await this.service.sendTransaction(body['tx'])
 
-      return false
-    }
+    return new ActionResponse<any>({})
   }
 
   @Get('mempool')
   @ApiOkResponse()
-  async getTxBatch(): Promise<any> {
-    try {
-      return this.service.getMempool()
-    } catch (e) {
-      console.log(e)
+  async getTxBatch() {
+    const data = this.service.getMempool()
 
-      return false
-    }
+    return new ActionResponse<any>({
+      data,
+    })
   }
 
-  @Get('orderbook')
+  @Get('execute')
   @ApiOkResponse()
-  async getOrderBook(): Promise<any> {
-    try {
-      return this.service.submitBatch()
-    } catch (e) {
-      console.log(e)
+  async getOrderBook() {
+    await this.service.submitBatch()
 
-      return false
-    }
+    return new ActionResponse<any>({})
   }
 
   @Get('account/:id')
   @ApiOkResponse()
-  async getAccount(@Param('id') id: string): Promise<any> {
-    try {
-      return this.service.getAccount(parseInt(id))
-    } catch (e) {
-      console.log(e)
-    }
+  async getAccount(@Param('id') id: string) {
+    const data = await this.service.getAccount(parseInt(id))
+
+    return new ActionResponse<any>({
+      data,
+    })
   }
 
   @Get('state-proof')
@@ -58,16 +49,14 @@ export class PublicApiController {
   async getStateProof(
     @Query('block') blockNumber: string,
     @Query('account') accountIndex: string,
-  ): Promise<any> {
-    try {
-      return this.service.getStateProof(
-        parseInt(blockNumber),
-        parseInt(accountIndex),
-      )
-    } catch (e) {
-      console.log(e)
+  ) {
+    const data = await this.service.getStateProof(
+      parseInt(blockNumber),
+      parseInt(accountIndex),
+    )
 
-      return false
-    }
+    return new ActionResponse<any>({
+      data,
+    })
   }
 }
