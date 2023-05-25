@@ -12,7 +12,6 @@ import { ValidationSharedModule } from '@lib/shared/validation'
     LoggerSharedModule,
     FiltersSharedModule,
     ValidationSharedModule,
-    RedisDatabaseSharedModule,
     PostgresDatabaseSharedModule,
   ],
   providers: [],

@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 
 import { appConfig } from './configs/app.config'
 import { databaseConfig } from './configs/database.config'
+import { ethConfig } from './configs/ethereum.config'
 import { kafkaConfig } from './configs/kafka.config'
 import { redisConfig } from './configs/redis.config'
 import { S3Config } from './configs/s3.config'
@@ -12,7 +13,14 @@ import { validationSchema } from './validation'
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, redisConfig, S3Config, kafkaConfig],
+      load: [
+        appConfig,
+        databaseConfig,
+        redisConfig,
+        S3Config,
+        kafkaConfig,
+        ethConfig,
+      ],
       validationSchema,
     }),
   ],

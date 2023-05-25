@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
 import { AccountEntity } from './entities/account.entity'
-import { ChainEntity } from './entities/chain.entity'
+import { BlockEntity } from './entities/block.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AccountEntity, ChainEntity])],
+  imports: [TypeOrmModule.forFeature([AccountEntity, BlockEntity])],
   providers: [],
   exports: [TypeOrmModule],
 })
