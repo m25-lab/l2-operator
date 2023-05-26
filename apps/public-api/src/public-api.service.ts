@@ -262,7 +262,7 @@ export class PublicApiService extends BaseService<
   async getStateProof(
     blockNumber: number,
     accountIndex: number,
-  ): Promise<{ trace: Array<string>; state: string }> {
+  ): Promise<{ trace: Array<string>; sibling: Array<string>; state: string }> {
     const block = await this.blockRepository.findOne({
       where: { blockNumber },
     })
@@ -281,12 +281,17 @@ export class PublicApiService extends BaseService<
 
     let index = 0
     const trace = []
+    const sibling = []
 
     let l = 0
     let r = block.stateLeaf.length - 1
 
     while (l < r) {
       trace.push(block.stateNode[index])
+      if (index != 0) {
+        sibling.push(block.stateNode[index % 2 == 0 ? index - 1 : index + 1])
+      }
+
       const mid = (l + r) >> 1
       if (accountIndex - 1 <= mid) {
         index = index * 2 + 1
@@ -297,9 +302,11 @@ export class PublicApiService extends BaseService<
       }
     }
     trace.push(block.stateNode[index])
+    sibling.push(block.stateNode[index % 2 == 0 ? index - 1 : index + 1])
 
     return {
       trace,
+      sibling,
       state: block.stateLeaf[accountIndex - 1],
     }
   }
