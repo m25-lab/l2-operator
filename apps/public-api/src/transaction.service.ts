@@ -1,39 +1,44 @@
 import { ethers } from 'ethers'
 
 export class SwapTransaction {
-  nonce: number
   accountIndex: number
   buy: boolean
   nativeValue: ethers.BigNumber
   tokenValue: ethers.BigNumber
+  compressNativeValue: string
+  compressTokenValue: string
   signature: string
   price: number
   txid: string
+  nonce: number
 
   constructor(
-    nonce: number,
-    accountIndex: number,
-    buy: boolean,
-    nativeValue: ethers.BigNumber,
-    tokenValue: ethers.BigNumber,
-    signature: string,
+    _nonce: number,
+    _accountIndex: number,
+    _buy: boolean,
+    _nativeValue: string,
+    _tokenValue: string,
+    _signature: string,
   ) {
-    this.nonce = nonce
-    this.accountIndex = accountIndex
-    this.buy = buy
-    this.nativeValue = nativeValue
-    this.tokenValue = tokenValue
-    this.signature = signature
+    this.nonce = _nonce
+    this.accountIndex = _accountIndex
+    this.buy = _buy
+    this.signature = '0x' + _signature
+    this.compressNativeValue = '0x' + _nativeValue
+    this.compressTokenValue = '0x' + _tokenValue
 
-    this.price = ethers.BigNumber.from(nativeValue)
-      .div(ethers.BigNumber.from(tokenValue))
-      .toNumber()
-    this.txid = ethers.utils.keccak256(
-      ethers.utils.solidityPack(
-        ['uint24', 'uint32', 'bool', 'uint80', 'uint80'],
-        [nonce, accountIndex, buy, nativeValue, tokenValue],
-      ),
+    //6 bytes for number
+    //2 bytes for power of 10
+    this.nativeValue = ethers.BigNumber.from(
+      '0x' + _nativeValue.slice(0, 6),
+    ).mul(ethers.BigNumber.from('10').pow('0x' + _nativeValue.slice(6, 8)))
+
+    this.tokenValue = ethers.BigNumber.from('0x' + _tokenValue.slice(0, 6)).mul(
+      ethers.BigNumber.from('10').pow('0x' + _tokenValue.slice(6, 8)),
     )
+
+    this.price = this.nativeValue.div(this.tokenValue).toNumber()
+    this.txid = this.generateTxid()
   }
 
   verifySignature(address: string): boolean {
@@ -48,14 +53,26 @@ export class SwapTransaction {
   toHex(): string {
     return (
       '0x' +
-      ethers.utils.hexZeroPad(ethers.utils.hexlify(this.nonce), 6).slice(2) +
       ethers.utils
-        .hexZeroPad(ethers.utils.hexlify(this.accountIndex), 8)
+        .hexZeroPad(ethers.utils.hexlify(this.accountIndex), 4)
         .slice(2) +
       (this.buy ? '01' : '00') +
-      ethers.utils.hexZeroPad(this.nativeValue.toHexString(), 20).slice(2) +
-      ethers.utils.hexZeroPad(this.tokenValue.toHexString(), 20).slice(2) +
+      this.compressNativeValue.slice(2) +
+      this.compressTokenValue.slice(2) +
       this.signature.slice(2)
+    )
+  }
+
+  generateTxid(): string {
+    return ethers.utils.keccak256(
+      '0x' +
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(this.nonce), 3).slice(2) +
+        ethers.utils
+          .hexZeroPad(ethers.utils.hexlify(this.accountIndex), 4)
+          .slice(2) +
+        (this.buy ? '01' : '00') +
+        this.compressNativeValue.slice(2) +
+        this.compressTokenValue.slice(2),
     )
   }
 

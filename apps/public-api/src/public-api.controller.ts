@@ -11,15 +11,17 @@ export class PublicApiController {
   @Post('tx')
   @ApiOkResponse()
   async submitTx(@Body() body: any) {
-    await this.service.sendTransaction(body['tx'])
+    const data = await this.service.sendTransaction(body['tx'])
 
-    return new ActionResponse<any>({})
+    return new ActionResponse<any>({
+      data,
+    })
   }
 
   @Get('mempool')
   @ApiOkResponse()
   async getTxBatch() {
-    const data = this.service.getMempool()
+    const data = await this.service.getMempool()
 
     return new ActionResponse<any>({
       data,

@@ -117,12 +117,12 @@ export class PublicApiService extends BaseService<
     return [...(await this.buildMerkleTree(newChildNode)), ...newChildNode]
   }
 
-  async sendTransaction(transactionData: string) {
+  async sendTransaction(transactionData: string): Promise<any> {
     if (transactionData.startsWith('0x')) {
       transactionData = transactionData.slice(2)
     }
 
-    if (transactionData.length !== 186) {
+    if (transactionData.length !== 162) {
       throw new ConflictException('Invalid transaction data')
     }
 
@@ -130,10 +130,12 @@ export class PublicApiService extends BaseService<
       parseInt(transactionData.slice(0, 6), 16),
       parseInt(transactionData.slice(6, 14), 16),
       transactionData.slice(14, 16) === '01',
-      ethers.BigNumber.from('0x' + transactionData.slice(16, 36)),
-      ethers.BigNumber.from('0x' + transactionData.slice(36, 56)),
-      '0x' + transactionData.slice(56, 186),
+      transactionData.slice(16, 24),
+      transactionData.slice(24, 32),
+      transactionData.slice(32, 162),
     )
+
+    console.log(tx.toJson())
 
     const account = await this.repository.findOne({
       where: { id: tx.accountIndex },
@@ -143,12 +145,12 @@ export class PublicApiService extends BaseService<
       throw new ConflictException('Account not found')
     }
 
-    if (!tx.verifySignature(account.address)) {
-      throw new ConflictException('Invalid signature')
-    }
-
     if (tx.nonce !== account.nonce + 1) {
       throw new ConflictException('Invalid nonce')
+    }
+
+    if (!tx.verifySignature(account.address)) {
+      throw new ConflictException('Invalid signature')
     }
 
     if (tx.buy) {
@@ -162,6 +164,8 @@ export class PublicApiService extends BaseService<
     }
 
     this.mempool.push(tx)
+
+    return tx.toJson()
   }
 
   async submitBatch() {
