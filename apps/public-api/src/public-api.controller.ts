@@ -31,7 +31,7 @@ export class PublicApiController {
   @Get('execute')
   @ApiOkResponse()
   async getOrderBook() {
-    await this.service.submitBatch()
+    await this.service.rollup()
 
     return new ActionResponse<any>({})
   }

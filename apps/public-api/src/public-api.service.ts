@@ -49,6 +49,10 @@ export class PublicApiService extends BaseService<
     this.mempool = new SwapTransactionBatch()
   }
 
+  onModuleInit() {
+    this.submitBatch()
+  }
+
   trackNewAccount() {
     this.contract.on('AccountCreated', (id, address, event) => {
       this.repository.save({
@@ -168,7 +172,7 @@ export class PublicApiService extends BaseService<
     return tx.toJson()
   }
 
-  async submitBatch() {
+  async rollup() {
     const accountMap = new Map<number, AccountEntity>()
     const interactSet = new Set<number>()
 
@@ -247,6 +251,17 @@ export class PublicApiService extends BaseService<
       },
       batch.toHex(),
     )
+
+    console.log('submit block', block.blockNumber, batch.toJson())
+  }
+
+  async submitBatch() {
+    while (true) {
+      await this.rollup()
+      await new Promise((r) =>
+        setTimeout(r, this.configService.get('eth.rollupDelay')),
+      )
+    }
   }
 
   async getMempool() {
