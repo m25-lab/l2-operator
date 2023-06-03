@@ -13,6 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create(PublicApiModule)
   const configService = app.get<any>(ConfigService)
 
+  console.log(configService.get('publicAPICors'))
   app.enableCors({
     origin: configService.get('publicAPICors'),
     credentials: true,
@@ -20,7 +21,6 @@ async function bootstrap() {
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
   app.use(cookieParser())
   app.use(helmet())
-  app.use(hpp())
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Public API Document')
