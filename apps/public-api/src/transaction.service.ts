@@ -37,7 +37,8 @@ export class SwapTransaction {
       ethers.BigNumber.from('10').pow('0x' + _tokenValue.slice(6, 8)),
     )
 
-    this.price = this.nativeValue.div(this.tokenValue).toNumber()
+    this.price =
+      this.nativeValue.mul(100000).div(this.tokenValue).toNumber() / 100000
     this.txid = this.generateTxid()
   }
 

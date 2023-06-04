@@ -10,7 +10,11 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { ethers } from 'ethers'
 import { Repository } from 'typeorm'
 import { BaseService } from '@lib/shared/base'
-import { AccountEntity, BlockEntity } from '@lib/shared/entities'
+import {
+  AccountEntity,
+  BlockEntity,
+  CheckpointEntity,
+} from '@lib/shared/entities'
 
 import Capy from './Capy.json'
 import { OrderBook } from './orderbook.service'
@@ -32,6 +36,8 @@ export class PublicApiService extends BaseService<
     repository: Repository<AccountEntity>,
     @InjectRepository(BlockEntity)
     private blockRepository: Repository<BlockEntity>,
+    @InjectRepository(CheckpointEntity)
+    private checkpointRepository: Repository<CheckpointEntity>,
     private readonly configService: ConfigService,
   ) {
     super(repository)
@@ -45,12 +51,12 @@ export class PublicApiService extends BaseService<
 
     this.contract = new ethers.Contract(CONTRACT, Capy['abi'], signer)
 
-    this.trackNewAccount()
     this.mempool = new SwapTransactionBatch()
   }
 
   onModuleInit() {
     this.submitBatch()
+    this.trackNewAccount()
   }
 
   trackNewAccount() {
@@ -63,6 +69,68 @@ export class PublicApiService extends BaseService<
         nonce: 0,
       })
     })
+  }
+
+  async createHardDeposit(): Promise<string> {
+    let checkpoint = await this.checkpointRepository.findOne({
+      where: {
+        key: 'hard-deposit',
+      },
+    })
+    let hexHardDeposit = '0x'
+
+    if (!checkpoint) {
+      await this.checkpointRepository.save({
+        key: 'hard-deposit',
+        value: 0,
+      })
+
+      checkpoint = new CheckpointEntity({
+        key: 'hard-deposit',
+        value: 0,
+      })
+    }
+
+    const MAXLEN = 1000
+    const start = checkpoint.value
+    try {
+      const hardTransactions = await this.contract.getHardTransactionsFrom(
+        start,
+        MAXLEN,
+      )
+
+      for (const hardTx of hardTransactions) {
+        const hexTx = hardTx.slice(2)
+        const accountIndex = parseInt(hexTx.slice(0, 8), 16)
+        const nativeValue = ethers.BigNumber.from('0x' + hexTx.slice(8, 72))
+        const tokenValue = ethers.BigNumber.from('0x' + hexTx.slice(72, 136))
+
+        const account = await this.repository.findOne({
+          where: {
+            id: accountIndex,
+          },
+        })
+
+        if (account) {
+          account.nativeBalance = ethers.BigNumber.from(account.nativeBalance)
+            .add(nativeValue)
+            .toString()
+          account.tokenBalance = ethers.BigNumber.from(account.tokenBalance)
+            .add(tokenValue)
+            .toString()
+
+          await this.repository.save(account)
+          hexHardDeposit += hexTx
+        }
+      }
+
+      checkpoint.value += hardTransactions.length
+      await this.checkpointRepository.save(checkpoint)
+    } catch (e) {
+      console.log(e)
+    }
+
+    return hexHardDeposit
   }
 
   async newMerlkTree(): Promise<{
@@ -173,6 +241,8 @@ export class PublicApiService extends BaseService<
   }
 
   async rollup() {
+    const hardDeposit = await this.createHardDeposit()
+
     const accountMap = new Map<number, AccountEntity>()
     const interactSet = new Set<number>()
 
@@ -249,7 +319,7 @@ export class PublicApiService extends BaseService<
         hardTransactionsCount: block.hardTransactionsCount,
         transactionsRoot: block.transactionsRoot,
       },
-      batch.toHex(),
+      hardDeposit + batch.toHex().slice(2),
     )
 
     console.log('submit block', block.blockNumber, batch.toJson())
