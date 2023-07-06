@@ -11,6 +11,7 @@ export class SwapTransaction {
   price: number
   txid: string
   nonce: number
+  immediateStateRoot: string
 
   constructor(
     _nonce: number,
@@ -18,12 +19,11 @@ export class SwapTransaction {
     _buy: boolean,
     _nativeValue: string,
     _tokenValue: string,
-    _signature: string,
   ) {
     this.nonce = _nonce
     this.accountIndex = _accountIndex
     this.buy = _buy
-    this.signature = '0x' + _signature
+    this.signature = '0x'
     this.compressNativeValue = '0x' + _nativeValue
     this.compressTokenValue = '0x' + _tokenValue
 
@@ -39,28 +39,25 @@ export class SwapTransaction {
 
     this.price =
       this.nativeValue.mul(100000).div(this.tokenValue).toNumber() / 100000
+
+    this.immediateStateRoot = '0x00000000000000000000000000000000'
     this.txid = this.generateTxid()
   }
 
-  verifySignature(address: string): boolean {
-    return (
-      ethers.utils.verifyMessage(
-        ethers.utils.arrayify(this.txid),
-        this.signature,
-      ) === address
-    )
+  updateSignature(signature: string) {
+    this.signature = signature
   }
 
   toHex(): string {
     return (
-      '0x' +
+      '0x01' +
       ethers.utils
         .hexZeroPad(ethers.utils.hexlify(this.accountIndex), 4)
         .slice(2) +
       (this.buy ? '01' : '00') +
       this.compressNativeValue.slice(2) +
       this.compressTokenValue.slice(2) +
-      this.signature.slice(2)
+      this.immediateStateRoot.slice(2)
     )
   }
 
@@ -82,8 +79,8 @@ export class SwapTransaction {
       nonce: this.nonce,
       accountIndex: this.accountIndex,
       buy: this.buy,
-      nativeValue: this.nativeValue,
-      tokenValue: this.tokenValue,
+      nativeValue: this.nativeValue.toString(),
+      tokenValue: this.tokenValue.toString(),
       signature: this.signature,
       price: this.price,
       txid: this.txid,

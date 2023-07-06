@@ -10,6 +10,9 @@ export class AccountEntity {
   address: string
 
   @Column()
+  blsPubkey: string
+
+  @Column()
   nativeBalance: string
 
   @Column()

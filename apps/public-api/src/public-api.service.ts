@@ -15,6 +15,7 @@ import {
   BlockEntity,
   CheckpointEntity,
 } from '@lib/shared/entities'
+import { bls12_381 as bls } from '@noble/curves/bls12-381'
 
 import Capy from './Capy.json'
 import { OrderBook } from './orderbook.service'
@@ -60,13 +61,15 @@ export class PublicApiService extends BaseService<
   }
 
   trackNewAccount() {
-    this.contract.on('AccountCreated', (id, address, event) => {
-      this.repository.save({
+    this.contract.on('AccountCreated', async (id, address, event) => {
+      const acc = await this.contract.getAccount(id)
+      await this.repository.save({
         id,
-        address,
+        address: address,
         nativeBalance: '0',
         tokenBalance: '0',
         nonce: 0,
+        blsPubkey: acc['blsPubKey'],
       })
     })
   }
@@ -189,41 +192,32 @@ export class PublicApiService extends BaseService<
     return [...(await this.buildMerkleTree(newChildNode)), ...newChildNode]
   }
 
-  async sendTransaction(transactionData: string): Promise<any> {
-    if (transactionData.startsWith('0x')) {
-      transactionData = transactionData.slice(2)
+  async sendTransaction(transactionData: any): Promise<any> {
+    if (transactionData['tx'].startsWith('0x')) {
+      transactionData['tx'] = transactionData['tx'].slice(2)
     }
 
-    if (transactionData.length !== 162) {
+    if (transactionData['tx'].length !== 28) {
       throw new ConflictException('Invalid transaction data')
     }
 
-    const tx = new SwapTransaction(
-      parseInt(transactionData.slice(0, 6), 16),
-      parseInt(transactionData.slice(6, 14), 16),
-      transactionData.slice(14, 16) === '01',
-      transactionData.slice(16, 24),
-      transactionData.slice(24, 32),
-      transactionData.slice(32, 162),
-    )
-
-    console.log(tx.toJson())
-
     const account = await this.repository.findOne({
-      where: { id: tx.accountIndex },
+      where: { id: parseInt(transactionData['tx'].slice(2, 10), 16) },
     })
 
     if (!account) {
       throw new ConflictException('Account not found')
     }
 
-    if (tx.nonce !== account.nonce + 1) {
-      throw new ConflictException('Invalid nonce')
-    }
+    const tx = new SwapTransaction(
+      account.nonce,
+      account.id,
+      transactionData['tx'].slice(10, 12) === '01',
+      transactionData['tx'].slice(12, 20),
+      transactionData['tx'].slice(20, 28),
+    )
 
-    if (!tx.verifySignature(account.address)) {
-      throw new ConflictException('Invalid signature')
-    }
+    console.log(tx.toJson())
 
     if (tx.buy) {
       if (ethers.BigNumber.from(account.nativeBalance).lt(tx.nativeValue)) {
@@ -233,6 +227,19 @@ export class PublicApiService extends BaseService<
       if (ethers.BigNumber.from(account.tokenBalance).lt(tx.tokenValue)) {
         throw new ConflictException('Insufficient token balance')
       }
+    }
+
+    const signature = transactionData['sig']
+    if (
+      !bls.verify(
+        signature.slice(2),
+        tx.txid.slice(2),
+        account.blsPubkey.slice(2),
+      )
+    ) {
+      throw new ConflictException('Invalid signature')
+    } else {
+      tx.updateSignature(signature)
     }
 
     this.mempool.push(tx)
@@ -308,6 +315,13 @@ export class PublicApiService extends BaseService<
       stateLeaf: merlkTree.leaf,
     })
 
+    let aggregateSignature = new Uint8Array(96)
+    if (batch.batch.length > 0) {
+      aggregateSignature = bls.aggregateSignatures(
+        batch.batch.map((tx) => tx.signature.slice(2)),
+      )
+    }
+
     await this.blockRepository.save(block)
 
     await this.contract.submitBlock(
@@ -318,6 +332,8 @@ export class PublicApiService extends BaseService<
         stateRoot: block.stateRoot,
         hardTransactionsCount: block.hardTransactionsCount,
         transactionsRoot: block.transactionsRoot,
+        aggregateSignature:
+          '0x' + Buffer.from(aggregateSignature).toString('hex'),
       },
       hardDeposit + batch.toHex().slice(2),
     )

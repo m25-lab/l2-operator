@@ -5,7 +5,6 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator'
-import { i18nValidationMessage } from 'nestjs-i18n'
 import { validationEthAddress } from '@lib/shared/utils'
 
 export function IsEthAddress(

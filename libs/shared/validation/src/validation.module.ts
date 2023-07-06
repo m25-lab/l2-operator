@@ -1,6 +1,5 @@
 import { Module, ValidationPipe } from '@nestjs/common'
 import { APP_PIPE } from '@nestjs/core'
-import { i18nValidationErrorFactory } from 'nestjs-i18n'
 
 @Module({
   providers: [
@@ -9,7 +8,6 @@ import { i18nValidationErrorFactory } from 'nestjs-i18n'
       useFactory: () => {
         return new ValidationPipe({
           whitelist: true,
-          exceptionFactory: i18nValidationErrorFactory,
         })
       },
     },

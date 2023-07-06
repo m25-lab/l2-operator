@@ -5,7 +5,6 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator'
-import { i18nValidationMessage } from 'nestjs-i18n'
 import { validatePhoneNumber } from '@lib/shared/utils'
 
 export function IsVNPhoneNumber(

@@ -14,11 +14,6 @@ import { ConfigService } from '@nestjs/config'
 import { Response } from 'express'
 import { pick } from 'lodash'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
-import {
-  getI18nContextFromArgumentsHost,
-  I18nContext,
-  I18nValidationException,
-} from 'nestjs-i18n'
 import { QueryFailedError } from 'typeorm'
 import {
   INTERNAL_SERVER_ERROR_MESSAGE,
@@ -74,7 +69,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
   private static handleResponse(
     response: Response,
     exception: HttpException | QueryFailedError | Error | BadRequestException,
-    i18n: I18nContext,
   ): void {
     const responseBody: HTTPResponse = {
       success: false,
@@ -90,41 +84,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
       if (exception instanceof ForbiddenException) {
         responseBody.message =
           !exception.message || exception.message == 'Forbidden resource'
-            ? i18n.t('messages.exceptions.unauthorized')
+            ? 'messages.exceptions.unauthorized'
             : exception.message
-      } else if (exception instanceof I18nValidationException) {
-        statusCode = HttpStatus.UNPROCESSABLE_ENTITY
-        responseBody.status_code = HttpStatus.UNPROCESSABLE_ENTITY
-        responseBody.message = i18n.t('messages.exceptions.badRequest')
-        responseBody.error = exception.errors?.map((error) => {
-          const messages = Object.keys(error?.constraints).reduce(
-            (result, constraintKey) => {
-              const message = i18n.t(
-                error?.constraints[constraintKey]?.split('|')?.[0],
-              )
-              result.push(message)
-
-              return result
-            },
-            [],
-          )
-
-          return {
-            property: error.property,
-            messages,
-          }
-        })
       } else {
         responseBody.message = toArray(
           (exception.getResponse() as any).message,
         ).join('\n')
       }
     } else if (exception instanceof QueryFailedError) {
-      responseBody.message = i18n.t('messages.exceptions.queryDatabaseError')
+      responseBody.message = 'messages.exceptions.queryDatabaseError'
       statusCode = HttpStatus.BAD_REQUEST
       responseBody.status_code = statusCode
     } else if (exception instanceof Error) {
-      responseBody.message = i18n.t('messages.exceptions.internalServerError')
+      responseBody.message = 'messages.exceptions.internalServerError'
     }
 
     response.status(statusCode).json(responseBody)
@@ -133,13 +105,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: HttpException | Error, host: ArgumentsHost): void {
     const ctx: HttpArgumentsHost = host.switchToHttp()
     const response: Response = ctx.getResponse()
-    const i18n = getI18nContextFromArgumentsHost(host)
 
     // Handling error message and logging
     this.handleMessage(exception, ctx)
 
     // Response to client
-    AllExceptionsFilter.handleResponse(response, exception, i18n)
+    AllExceptionsFilter.handleResponse(response, exception)
   }
 
   private handleMessage(

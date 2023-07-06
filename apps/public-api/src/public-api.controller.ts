@@ -11,7 +11,7 @@ export class PublicApiController {
   @Post('tx')
   @ApiOkResponse()
   async submitTx(@Body() body: any) {
-    const data = await this.service.sendTransaction(body['tx'])
+    const data = await this.service.sendTransaction(body)
 
     return new ActionResponse<any>({
       data,
