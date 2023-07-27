@@ -343,7 +343,11 @@ export class PublicApiService extends BaseService<
 
   async submitBatch() {
     while (true) {
-      await this.rollup()
+      try {
+        await this.rollup()
+      } catch (e) {
+        console.log(e)
+      }
       await new Promise((r) =>
         setTimeout(r, this.configService.get('eth.rollupDelay')),
       )

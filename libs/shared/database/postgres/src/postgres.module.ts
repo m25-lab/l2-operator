@@ -21,6 +21,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
           logging: configService.get<boolean>('database.enabledLogging'),
           bigNumberStrings: false,
           namingStrategy: new SnakeNamingStrategy(),
+          synchronize: true,
         }
       },
       inject: [ConfigService],

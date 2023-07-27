@@ -6,7 +6,7 @@ export class CheckpointEntity {
   @PrimaryColumn()
   key: string
 
-  @Column()
+  @Column({ unique: true })
   value: number
 
   constructor(partial: Partial<CheckpointEntity>) {

@@ -6,19 +6,19 @@ export class AccountEntity {
   @PrimaryColumn()
   id: number
 
-  @Column()
+  @Column({ unique: true })
   address: string
 
-  @Column()
+  @Column({ unique: true })
   blsPubkey: string
 
-  @Column()
+  @Column({ unique: true })
   nativeBalance: string
 
-  @Column()
+  @Column({ unique: true })
   tokenBalance: string
 
-  @Column()
+  @Column({ unique: true })
   nonce: number
 
   constructor(partial: Partial<AccountEntity>) {
