@@ -6,28 +6,28 @@ export class BlockEntity {
   @PrimaryColumn()
   blockNumber: number
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   blockHash: string
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   version: number
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   stateSize: number
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   stateRoot: string
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   transactionsRoot: string
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   transactionsHash: string
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   hardTransactionsCount: number
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   isPending: boolean
 
   @Column({ type: 'json' })
@@ -36,7 +36,7 @@ export class BlockEntity {
   @Column({ type: 'json' })
   stateLeaf: any
 
-  @Column({ unique: true })
+  @Column({ nullable: true })
   submittedAt: number
 
   constructor(partial: Partial<BlockEntity>) {
