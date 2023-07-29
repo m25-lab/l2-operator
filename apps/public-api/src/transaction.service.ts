@@ -62,6 +62,18 @@ export class SwapTransaction {
   }
 
   generateTxid(): string {
+    console.log('TxID chuaw Hash')
+    console.log(
+      '0x' +
+        ethers.utils.hexZeroPad(ethers.utils.hexlify(this.nonce), 3).slice(2) +
+        ethers.utils
+          .hexZeroPad(ethers.utils.hexlify(this.accountIndex), 4)
+          .slice(2) +
+        (this.buy ? '01' : '00') +
+        this.compressNativeValue.slice(2) +
+        this.compressTokenValue.slice(2),
+    )
+
     return ethers.utils.keccak256(
       '0x' +
         ethers.utils.hexZeroPad(ethers.utils.hexlify(this.nonce), 3).slice(2) +
