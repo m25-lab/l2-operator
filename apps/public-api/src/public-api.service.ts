@@ -210,7 +210,7 @@ export class PublicApiService extends BaseService<
     }
 
     const tx = new SwapTransaction(
-      account.nonce + 1,
+      0,
       account.id,
       transactionData['tx'].slice(10, 12) === '01',
       transactionData['tx'].slice(12, 20),
